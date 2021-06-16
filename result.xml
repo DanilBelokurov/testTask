@@ -1,17 +1,1 @@
-<?xml version="1.0"?>
-<total>
-    <result>
-        <Person name="Михаил" wallet="459.85" appendFromBank="458.51"></Person>
-        <Person name="Татьяна" wallet="459.84" appendFromBank="457.73"></Person>
-        <Person name="Игорь" wallet="459.84" appendFromBank="456.4"></Person>
-        <Person name="Александр" wallet="459.84" appendFromBank="454.69"></Person>
-        <Person name="Георг" wallet="459.84" appendFromBank="457.74"></Person>
-        <Person name="Оля" wallet="459.84" appendFromBank="458.41"></Person>
-        <Person name="Светлана" wallet="459.84" appendFromBank="455.59"></Person>
-    </result>
-    <minimum>
-        <Person name="Александр"></Person>
-        <Person name="Светлана"></Person>
-        <Person name="Игорь"></Person>
-    </minimum>
-</total>
+<?xml version="1.0" ?><total><result><Person name="Михаил" wallet="459.85" appendFromBank="458.51"></Person><Person name="Татьяна" wallet="459.85" appendFromBank="457.73"></Person><Person name="Игорь" wallet="459.84" appendFromBank="456.40"></Person><Person name="Александр" wallet="459.85" appendFromBank="454.70"></Person><Person name="Георг" wallet="459.85" appendFromBank="457.74"></Person><Person name="Оля" wallet="459.85" appendFromBank="458.42"></Person><Person name="Светлана" wallet="459.85" appendFromBank="455.60"></Person></result><minimum><Person name="Александр"></Person><Person name="Светлана"></Person><Person name="Игорь"></Person></minimum></total>

@@ -1,5 +1,7 @@
 package task;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
@@ -8,85 +10,75 @@ import java.util.TreeMap;
 public class Distribution {
     
     private ArrayList<Person> persons;
-    private int bank;
+    private BigDecimal bankDeposit;
 
-    public Distribution(ArrayList<Person> persons, String bank) {
+    public Distribution(ArrayList<Person> persons, String bankDeposit) {
         this.persons = persons;
-        this.bank = (int)( Float.valueOf(bank) * 100);
+        this.bankDeposit = new BigDecimal(bankDeposit);
     }
 
     public ArrayList<Person> evenDistribution() {
 
-        // I Этап. Распределяем бюджет поравну и находим среднее
-        int personsNum = persons.size(); // Количество клиентов
-        int proportion = bank / personsNum; // Сумма в банке / кол-во клиентов
+        // 0 Этап. Подготовительный
+        int members = persons.size();       // Между сколькими людьми происходит распределение
+        BigDecimal sum = BigDecimal.ZERO;   // Сумма депозита и клиентских средств
+        BigDecimal average;                 // Средняя сумма на клиента
 
-        int average = 0; // Средняя сумма
-
+        // I Этап. Суммируем банковский депозит и кошельки
         for (Person person : persons) {
-            person.changeWallet(proportion);
-            person.changeAppendFromBank(proportion);
-            average += person.getWallet();       
+            sum = sum.add(person.getWallet());
         }
-        average /= personsNum;
+        sum = sum.add(bankDeposit);
 
-        // II Этап. Вычисление разницы до среднего каждого клиента
-        ArrayList<Integer> targets = new ArrayList<>();
-        for (Person person : persons) {
-            targets.add(average - person.getWallet());  
-        }
-        ArrayList<Integer> difference = new ArrayList<>(targets);
+        // II Этап. Вычисляем среднее
+        average = sum.divide(BigDecimal.valueOf(members), RoundingMode.UP);
 
-
-        // III Этап. Распределение
-
-        // Положительное значение target -- клиенту надо добавить
-        // Отрицательное значение target -- у клиента надо отнять
-        int positiveTargetsNum = 0;
-        for (Integer target : targets) {
-            if (target > 0) {
-                positiveTargetsNum += 1;
+        // III Этап. Проверка сумм участников распределения
+        // Проверяем есть ли люди, сумма на счету которых больше среднего
+        // если такие есть, то в распределении депозита они не участвуют
+        boolean richPeopleFlag = false;
+        for (int index = 0; index < persons.size(); index++) {
+            if (persons.get(index).getWallet().compareTo(average) == 1) {
+                sum = sum.subtract(persons.get(index).getWallet());
+                persons.get(index).setAppendFromBank(BigDecimal.ZERO);
+                richPeopleFlag = true;
+                members -= 1;
             }
         }
 
-        while (positiveTargetsNum > 0) {
+        // Если нужно, пересчитываем среднее значение
+        if (richPeopleFlag) {
+            average = average.divide(BigDecimal.valueOf(members), RoundingMode.UP);
+        }
 
-            int addition = 0;
+        // Вычисление излишка, полученного при округлении
+        BigDecimal remainder = average.multiply(new BigDecimal(members)).subtract(sum);
 
-            for (int index = 0; index < targets.size(); index++) {
-                
-                // Поиск того, кто будет отдавать 
-                if (targets.get(index) < 0) {
+        // IV Этап. Распределение
+        for (int index = 0; index < persons.size(); index++) {
 
-                    int targetValue = targets.get(index);
+            // Проверка участия клиента в распределении
+            if (persons.get(index).getAppendFromBank().compareTo(BigDecimal.ZERO) != 0) {
 
-                    // Вычисление суммы, которую он может отдать
-                    addition = targetValue / positiveTargetsNum;
-                    targets.set(index, targetValue - (addition * positiveTargetsNum));
+                // Разница между средним и кошелком -- сумма, добавленная банком
+                persons.get(index).setAppendFromBank(average.subtract(persons.get(index).getWallet()).setScale(2, RoundingMode.DOWN));
 
-                    // Перераспределение денег
-                    for (int i = 0; i < targets.size(); i++) {
-                        if (targets.get(i) > 0) {
-                            targets.set(i, targets.get(i) + addition);
-                        }
-                    }
+                // Вычисленное среднее поступает ему на сумму
+                persons.get(index).setWallet(average.setScale(2, RoundingMode.CEILING));
+            }
+        }
 
-                    // Перерасчет target
-                    positiveTargetsNum = 0;
-                    for (Integer target : targets) {
-                        if (target > 0) {
-                            positiveTargetsNum += 1;
-                        }
-                    }                    
+        // V Этап. Распределение остатка случайному участнику
+        if (remainder.compareTo(BigDecimal.ZERO) != 0) {
+            int randMember = (int)(Math.random() * members);
+
+            while (randMember != -1) {
+                if (persons.get(randMember).getAppendFromBank().compareTo(BigDecimal.ZERO) != 0) {
+                    persons.get(randMember).changeWallet(remainder.negate());
+                    persons.get(randMember).changeAppendFromBank(remainder.negate());
+                    randMember = -1;
                 }
             }
-
-        }
-
-        // IV Этап. Формирование результата
-        for (int index = 0; index < personsNum; index++) {
-            persons.get(index).changeWallet(difference.get(index) - targets.get(index));
-            persons.get(index).changeAppendFromBank(difference.get(index) - targets.get(index));
         }
 
         return persons;
@@ -98,7 +90,7 @@ public class Distribution {
         ArrayList<String> result = new ArrayList<>();
 
         // I Этап. Сортировка клиентов с помощью дерева
-        Map<Integer, String> sortedPersons = new TreeMap<>();
+        Map<BigDecimal, String> sortedPersons = new TreeMap<>();
 
         for (Person person : persons) {
             sortedPersons.put(
@@ -106,7 +98,7 @@ public class Distribution {
                 person.getName());
         }
 
-        // II Этап. Отбор трех клиентов с минимальной суммой от банка
+        // II Этап. Отбор трех клиентов с минимальной суммой полученной от банка
         int counter = 0;
         for (String personName : sortedPersons.values()) {
             if (counter < 3) {

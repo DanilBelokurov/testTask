@@ -24,6 +24,5 @@ public class Main {
 
         // Запись результата
         XMLWriter.write(outputFile, persons, minAppendPersons);
-
     }
 }

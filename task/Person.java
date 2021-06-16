@@ -1,54 +1,58 @@
 package task;
 
+import java.math.BigDecimal;
 
-/**
- * Person
- */
+
 public class Person {
 
     private String name;
-    private int wallet;
-    private int appendFromBank;
+    private BigDecimal wallet;
+    private BigDecimal appendFromBank;
 
     public Person(String name, String wallet) {
         this.name = name;
-        this.wallet = (int)( Float.valueOf(wallet) * 100);
-        this.appendFromBank = 0;
+        this.wallet = new BigDecimal(wallet);
+
+        this.appendFromBank = new BigDecimal(-1);
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setWallet(int wallet) {
+    public void setWallet(BigDecimal wallet) {
         this.wallet = wallet;
+    }
+
+    public void setAppendFromBank(BigDecimal append) {
+        this.appendFromBank = append;
     }
 
     public String getName() {
         return this.name;
     }
 
-    public int getWallet() {
+    public BigDecimal getWallet() {
         return this.wallet;
     }
 
     public String getWalletInString(){
-        return String.valueOf((float)this.wallet/100);
+        return wallet.toString();
     }
 
-    public int getAppendFromBank() {
+    public BigDecimal getAppendFromBank() {
         return this.appendFromBank;
     }
 
     public String getAppendFromBankInString(){
-        return String.valueOf((float)this.appendFromBank/100);
+        return this.appendFromBank.toString();
     }
 
-    public void changeWallet(int addition) {
-        this.wallet += addition;
+    public void changeWallet(BigDecimal addition) {
+        this.wallet = wallet.add(addition);
     }
 
-    public void changeAppendFromBank(int addition) {
-        this.appendFromBank += addition;
+    public void changeAppendFromBank(BigDecimal addition) {
+        this.appendFromBank = appendFromBank.add(addition);
     }
 }
