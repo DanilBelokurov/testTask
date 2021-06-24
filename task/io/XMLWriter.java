@@ -1,7 +1,9 @@
 package task.io;
 
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -12,14 +14,14 @@ import task.Person;
 
 public class XMLWriter {
  
-    public static void write(String fileName, ArrayList<Person> persons, ArrayList<String> minimumAdded) {
+    public static void write(String fileName, ArrayList<Person> persons, ArrayList<String> minAppendPerson) {
         
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         XMLStreamWriter writer = null;
         
-        try (FileWriter fileWriter = new FileWriter(fileName)) {
-            
-            writer = factory.createXMLStreamWriter(fileWriter);
+        try (OutputStreamWriter outputStream =  new OutputStreamWriter(new FileOutputStream(fileName), StandardCharsets.UTF_8)) {
+
+            writer = factory.createXMLStreamWriter(outputStream);
             writer.writeStartDocument();
 
             writer.writeStartElement("total");
@@ -34,12 +36,15 @@ public class XMLWriter {
             }
             writer.writeEndElement();
             
+
             writer.writeStartElement("minimum");
-            for (String name : minimumAdded) {
+
+            for (String name : minAppendPerson) {
                 writer.writeStartElement("Person");
                 writer.writeAttribute("name", name);
                 writer.writeEndElement();
             }
+
             writer.writeEndElement();
 
             writer.writeEndElement();

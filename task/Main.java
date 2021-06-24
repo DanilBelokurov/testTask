@@ -9,7 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // Исходные данные и результат
+        // Начальные данные и результат
         String inputFile  = "bank.xml";
         String outputFile = "result.xml";
 
@@ -20,9 +20,9 @@ public class Main {
         // Распределение денег между людьми
         Distribution distribution = new Distribution(persons, bankDeposit);
         persons = distribution.evenDistribution();
-        ArrayList<String> minAppendPersons = distribution.getMinAppendPersons();
+        ArrayList<String> minAppendPerson = distribution.getMinAppendPerson();
 
         // Запись результата
-        XMLWriter.write(outputFile, persons, minAppendPersons);
+        XMLWriter.write(outputFile, persons, minAppendPerson);
     }
 }

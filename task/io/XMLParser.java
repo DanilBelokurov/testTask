@@ -2,6 +2,9 @@ package task.io;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import javax.xml.stream.XMLInputFactory;
@@ -16,10 +19,12 @@ public class XMLParser {
         
         String result = "";
         
-        try{
-            FileInputStream fileInputStream = new FileInputStream(fileName);
-            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-            XMLStreamReader xmlReader = inputFactory.createXMLStreamReader(fileName, fileInputStream);
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+        XMLStreamReader xmlReader = null;
+
+        try (InputStreamReader inputStream = new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8)){
+            
+            xmlReader = factory.createXMLStreamReader(inputStream);
 
             while (xmlReader.hasNext()) {
                 xmlReader.next();
@@ -27,8 +32,11 @@ public class XMLParser {
                 if (xmlReader.isStartElement() && xmlReader.getLocalName().equals(elementName)) {
                     return xmlReader.getAttributeValue(attributeIndex);
                 }
-            }                    
+            }
+
         } catch (FileNotFoundException | XMLStreamException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
 
@@ -39,10 +47,12 @@ public class XMLParser {
 
         ArrayList<Person> persons = new ArrayList<>();
 
-        try{
-            FileInputStream fileInputStream = new FileInputStream(fileName);
-            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-            XMLStreamReader xmlReader = inputFactory.createXMLStreamReader(fileName, fileInputStream);
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+        XMLStreamReader xmlReader = null;
+
+        try (InputStreamReader inputStream = new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8)){
+
+            xmlReader = factory.createXMLStreamReader(inputStream);
 
             while (xmlReader.hasNext()) {
                 xmlReader.next();
@@ -54,6 +64,8 @@ public class XMLParser {
                 }
             }                    
         } catch (FileNotFoundException | XMLStreamException ex) {
+            ex.printStackTrace();
+        }  catch (IOException ex) {
             ex.printStackTrace();
         }
 
